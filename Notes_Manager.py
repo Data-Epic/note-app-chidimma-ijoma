@@ -1,7 +1,6 @@
 from datetime import datetime #Import the library that inputs a timestamp
 import pandas as pd #Import library to manage note entries into a dataframe for ease
 
-
 class Notes:
     """
     A class to represent a note with content and an automatic timestamp.
