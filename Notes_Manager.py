@@ -125,7 +125,7 @@ class NotesManager:
             return "Deleted Successfully"
         return "Not Found"
     
-   def show_notes(self):
+    def show_notes(self):
         """
         Displays all stored notes.
         """
