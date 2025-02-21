@@ -1,4 +1,6 @@
 from datetime import datetime #Import the library that inputs a timestamp
+import pandas as pd #Import library to manage note entries into a dataframe for ease
+
 
 class Notes:
     """
@@ -67,3 +69,15 @@ class ReminderNote(Notes):
             print("Reminder set for: " + str(self.reminder_date_time))
         else:
             print("No reminder set")
+
+class NotesManager:
+    """
+    A class to manage notes using a pandas DataFrame.
+    """
+
+    def __init__(self):
+        """
+        Initialize an empty DataFrame to store notes.
+        """
+        self.notes = pd.DataFrame(columns=["ID", "Type", "Content", "Created_At", "Reminder_Time"])
+        self.note_id = 1  # Unique ID for each note
