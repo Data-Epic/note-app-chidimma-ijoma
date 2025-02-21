@@ -80,7 +80,7 @@ class NotesManager:
         Initialize an empty DataFrame to store notes.
         """
         self.notes = pd.DataFrame(columns=["ID", "Type", "Content", "Created_At", "Reminder_Time"])
-        self.note_id = 1  # Unique ID for each note
+        self.next_id = 1  # Unique ID for each note
 
     def add_note(self, note_type, content, reminder_date_time=None):
         """
