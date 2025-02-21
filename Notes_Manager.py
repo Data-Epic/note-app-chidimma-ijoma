@@ -109,3 +109,18 @@ class NotesManager:
         self.next_id += 1  # Increment ID counter
 
         return new_note["ID"]  # Return the ID of the created note
+    
+    def delete_note(self, note_id):
+        """
+        Removes a note by its ID.
+
+        Args:
+            note_id (int): The ID of the note to be removed.
+
+        Returns:
+            "Deleted Successfully" if the note was deleted, "Not Found" if not found.
+        """
+        if note_id in self.notes["ID"].values:
+            self.notes = self.notes[self.notes["ID"] != note_id]  # Remove row where ID matches
+            return "Deleted Successfully"
+        return "Not Found"
