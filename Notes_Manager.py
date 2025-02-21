@@ -124,3 +124,12 @@ class NotesManager:
             self.notes = self.notes[self.notes["ID"] != note_id]  # Remove row where ID matches
             return "Deleted Successfully"
         return "Not Found"
+    
+   def show_notes(self):
+        """
+        Displays all stored notes.
+        """
+        if self.notes.empty:
+            print("No notes available.")
+        else:
+            print(self.notes.to_string(index=False))  # Display the DataFrame without row index
