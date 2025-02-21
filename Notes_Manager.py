@@ -81,3 +81,31 @@ class NotesManager:
         """
         self.notes = pd.DataFrame(columns=["ID", "Type", "Content", "Created_At", "Reminder_Time"])
         self.note_id = 1  # Unique ID for each note
+
+    def add_note(self, note_type, content, reminder_date_time=None):
+        """
+        Adds a new note of the specified type.
+
+        Args:
+            note_type (str): Type of note ("text" or "reminder").
+            content (str): The text content of the note.
+            reminder_time (datetime, optional): The reminder time for a ReminderNote.
+        """
+        if note_type.lower() == "reminder" and reminder_date_time is None:
+            raise ValueError("ReminderNote requires a reminder_time.")
+
+        # Create a dictionary representing the new note
+        new_note = {
+            "ID": self.next_id,
+            "Type": note_type.capitalize(),
+            "Content": content,
+            "Created_At": datetime.now(),
+            "Reminder_Time": reminder_date_time if note_type.lower() == "reminder" else None
+        }
+
+        # Append the new note as a new row in the DataFrame
+        self.notes = pd.concat([self.notes, pd.DataFrame([new_note])], ignore_index=True)
+
+        self.next_id += 1  # Increment ID counter
+
+        return new_note["ID"]  # Return the ID of the created note
