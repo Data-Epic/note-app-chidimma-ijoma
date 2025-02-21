@@ -133,3 +133,17 @@ class NotesManager:
             print("No notes available.")
         else:
             print(self.notes.to_string(index=False))  # Display the DataFrame without row index
+
+    def search_notes(self, keyword):
+        """
+        Finds and displays notes containing a specific keyword.
+
+        Args:
+            keyword (str): The keyword to search for.
+        """
+        results = self.notes[self.notes["Content"].str.contains(keyword, case=False, na=False)]
+
+        if results.empty:
+            print("No notes found containing" + keyword)
+        else:
+            print(results.to_string(index=False))  # Display only matching notes
