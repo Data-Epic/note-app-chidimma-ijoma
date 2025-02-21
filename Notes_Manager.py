@@ -20,3 +20,14 @@ class Notes:
         Prints the note's timestamp and content.
         """
         print(str(self.created_at) + "\n" + self.content)
+class TextNote(Notes):
+    """
+    A simple text-based note.
+    """
+
+    def display(self):
+        """
+        Displays the note type, timestamp, and content.
+        """
+        print("Simple Note")
+        super().display()  # Reuses the parent class display method
