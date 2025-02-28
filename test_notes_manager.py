@@ -18,3 +18,16 @@ Test adding a simple text note.
     assert len(notes_manager.notes) == 1
     assert notes_manager.notes[0].id == note_id
 
+def test_add_reminder_note(setup_notes_manager):
+    """
+Test adding a reminder note.
+"""
+    notes_manager = setup_notes_manager
+    note_id = notes_manager.add_note("reminder", "Doctor's appointment", "2025-03-10 10:00 AM")
+    
+    assert len(notes_manager.notes) == 1
+    assert notes_manager.notes[0].id == note_id
+    assert notes_manager.notes[0].reminder_time == "2025-03-10 10:00 AM"
+
+
+
