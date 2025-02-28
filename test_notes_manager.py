@@ -39,6 +39,11 @@ Test deleting a note.
     assert notes_manager.delete_note(note_id) == True
     assert len(notes_manager.notes) == 0
 
-
+def test_delete_nonexistent_note(setup_notes_manager):
+    """
+Test deleting a note that does not exist.
+"""
+    notes_manager = setup_notes_manager
+    assert notes_manager.delete_note(999) == False  # Should return False
 
 
