@@ -46,4 +46,15 @@ Test deleting a note that does not exist.
     notes_manager = setup_notes_manager
     assert notes_manager.delete_note(999) == False  # Should return False
 
+def test_show_notes(setup_notes_manager, capsys):
+    """
+Test showing notes.
+"""
+    notes_manager = setup_notes_manager
+    notes_manager.add_note("text", "First note")
+    notes_manager.show_notes()
+
+    captured = capsys.readouterr()
+    assert "First note" in captured.out
+
 
