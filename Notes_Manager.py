@@ -1,12 +1,11 @@
-from datetime import datetime #Import the library that inputs a timestamp
-import pandas as pd #Import library to manage note entries into a dataframe for ease
+from datetime import datetime
 
-#This edit is to facilitate a pull request
+class Note:
+    """
+    Base class for a note, storing content and creation timestamp.
+    """
 
-class Notes:
-    """
-    A class to represent a note with content and an automatic timestamp.
-    """
+    note_counter = 0  # Assign unique IDs to notes
 
     def __init__(self, content):
         """
@@ -15,102 +14,105 @@ class Notes:
         Args:
             content (str): The text content of the note.
         """
+        self.id = Note.note_counter + 1
+        Note.note_counter += 1
         self.content = content
-        self.created_at = datetime.now()  # Automatically assigns a timestamp
+        self.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def display(self):
         """
-        Prints the note's timestamp and content.
+        Displays note details.
+
+        Returns:
+            str: Formatted string containing note details.
         """
-        print(str(self.created_at) + "\n" + self.content)
-class TextNote(Notes):
+        return f"ID: {self.id}\nCreated: {self.created_at}\nContent: {self.content}"
+
+class TextNote(Note):
     """
     A simple text-based note.
     """
 
+    def __init__(self, content):
+        """
+        Initializes a TextNote instance.
+
+        Args:
+            content (str): The text content of the note.
+        """
+        super().__init__(content)
+
     def display(self):
         """
-        Displays the note type, timestamp, and content.
+        Displays text note details.
+
+        Returns:
+            str: Formatted string with note type included.
         """
-        print("Simple Note")
-        super().display()  # Reuses the parent class display method
+        return f"[Text Note]\n{super().display()}"
 
-class ReminderNote(Notes):
+class ReminderNote(Note):
     """
-    A note that includes an additional reminder date and time.
+    A reminder note with an additional reminder time.
     """
 
-    def __init__(self, content, reminder_date_time=None):
+    def __init__(self, content, reminder_time):
         """
         Initializes a ReminderNote instance.
 
         Args:
             content (str): The text content of the note.
-            reminder_date_time (datetime, optional): The reminder date and time.
+            reminder_time (str): The reminder time in "YYYY-MM-DD HH:MM" format.
         """
         super().__init__(content)
-        self.reminder_date_time = reminder_date_time  # Initializes reminder with None by default
-
-    def set_reminder(self, reminder_date_time):
-        """
-        Sets a reminder date and time.
-        
-        Args:
-            reminder_date_time (datetime): The date and time for the reminder.
-        """
-        self.reminder_date_time = reminder_date_time
+        self.reminder_time = reminder_time
 
     def display(self):
         """
-        Displays the reminder note with its details.
+        Displays reminder note details.
+
+        Returns:
+            str: Formatted string with note type and reminder time.
         """
-        print("Reminder Note")
-        super().display()
-        if self.reminder_date_time:
-            print("Reminder set for: " + str(self.reminder_date_time))
-        else:
-            print("No reminder set")
+        return f"[Reminder Note]\n{super().display()}\nReminder Time: {self.reminder_time}"
 
 class NotesManager:
     """
-    A class to manage notes using a pandas DataFrame.
+    Manages a collection of notes with functionalities to add, delete, search, and display.
     """
 
     def __init__(self):
         """
-        Initialize an empty DataFrame to store notes.
+        Initializes the NotesManager with an empty list of notes.
         """
-        self.notes = pd.DataFrame(columns=["ID", "Type", "Content", "Created_At", "Reminder_Time"])
-        self.next_id = 1  # Unique ID for each note
+        self.notes = [] # Creates an empty list to store notes.
 
-    def add_note(self, note_type, content, reminder_date_time=None):
+    def add_note(self, note_type, content, reminder_time=None):
         """
         Adds a new note of the specified type.
 
         Args:
             note_type (str): Type of note ("text" or "reminder").
             content (str): The text content of the note.
-            reminder_time (datetime, optional): The reminder time for a ReminderNote.
+            reminder_time (str, optional): The reminder time (only for ReminderNote).
+
+        Returns:
+            int: The ID of the newly created note.
         """
-        if note_type.lower() == "reminder" and reminder_date_time is None:
-            raise ValueError("ReminderNote requires a reminder_time.")
+        if note_type.lower() == "text":
+            note = TextNote(content)
+        elif note_type.lower() == "reminder":
+            if not reminder_time:
+                raise ValueError("ReminderNote requires a reminder_time.")
+            note = ReminderNote(content, reminder_time)
+        else:
+            print("Invalid note type! Use 'text' or 'reminder'.")
+            return
 
-        # Create a dictionary representing the new note
-        new_note = {
-            "ID": self.next_id,
-            "Type": note_type.capitalize(),
-            "Content": content,
-            "Created_At": datetime.now(),
-            "Reminder_Time": reminder_date_time if note_type.lower() == "reminder" else None
-        }
+        self.notes.append(note)
+        print(f"Note added successfully! (ID: {note.id})")
+        return note.id
 
-        # Append the new note as a new row in the DataFrame
-        self.notes = pd.concat([self.notes, pd.DataFrame([new_note])], ignore_index=True)
-
-        self.next_id += 1  # Increment ID counter
-
-        return new_note["ID"]  # Return the ID of the created note
-    
     def delete_note(self, note_id):
         """
         Removes a note by its ID.
@@ -119,21 +121,26 @@ class NotesManager:
             note_id (int): The ID of the note to be removed.
 
         Returns:
-            "Deleted Successfully" if the note was deleted, "Not Found" if not found.
+            bool: True if the note was deleted, False if not found.
         """
-        if note_id in self.notes["ID"].values:
-            self.notes = self.notes[self.notes["ID"] != note_id]  # Remove row where ID matches
-            return "Deleted Successfully"
-        return "Not Found"
-    
+        for note in self.notes:
+            if note.id == note_id:
+                self.notes.remove(note)
+                print(f"Note with ID {note_id} deleted.")
+                return True
+        print("Note not found.")
+        return False
+
     def show_notes(self):
         """
         Displays all stored notes.
         """
-        if self.notes.empty:
+        if not self.notes:
             print("No notes available.")
         else:
-            print(self.notes.to_string(index=False))  # Display the DataFrame without row index
+            for note in self.notes:
+                print(note.display())
+                print("-" * 40) # A separator between notes
 
     def search_notes(self, keyword):
         """
@@ -142,9 +149,58 @@ class NotesManager:
         Args:
             keyword (str): The keyword to search for.
         """
-        results = self.notes[self.notes["Content"].str.contains(keyword, case=False, na=False)]
-
-        if results.empty:
-            print("No notes found containing" + keyword)
+        found_notes = [note for note in self.notes if keyword.lower() in note.content.lower()]
+        if not found_notes:
+            print(f"No notes found containing '{keyword}'.")
         else:
-            print(results.to_string(index=False))  # Display only matching notes
+            for note in found_notes:
+                print(note.display())
+                print("-" * 30)
+
+def main():
+    """
+    Main function to interact with the Notes Manager.
+    """
+    notes_manager = NotesManager()
+
+    while True:
+        print("\nSmart Notes Manager")
+        print("1. Add Note")
+        print("2. Show Notes")
+        print("3. Search Notes")
+        print("4. Delete Note")
+        print("5. Exit")
+
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            note_type = input("Enter note type (text/reminder): ").strip().lower()
+            content = input("Enter note content: ").strip()
+            reminder_time = None
+            if note_type == "reminder":
+                reminder_time = input("Enter reminder time (YYYY-MM-DD HH:MM): ").strip()
+            notes_manager.add_note(note_type, content, reminder_time)
+
+        elif choice == "2":
+            notes_manager.show_notes()
+
+        elif choice == "3":
+            keyword = input("Enter keyword to search: ").strip()
+            notes_manager.search_notes(keyword)
+
+        elif choice == "4":
+            try:
+                note_id = int(input("Enter note ID to delete: "))
+                notes_manager.delete_note(note_id)
+            except ValueError:
+                print("Invalid input. Please enter a valid note ID.")
+
+        elif choice == "5":
+            print("Exiting Smart Notes Manager. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please enter a valid option.")
+
+if __name__ == "__main__":
+    main()
