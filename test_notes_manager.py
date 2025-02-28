@@ -57,4 +57,15 @@ Test showing notes.
     captured = capsys.readouterr()
     assert "First note" in captured.out
 
+def test_search_notes(setup_notes_manager, capsys):
+    """
+Test searching for a note.
+"""
+    notes_manager = setup_notes_manager
+    notes_manager.add_note("text", "Buy milk")
+    notes_manager.search_notes("milk")
+
+    captured = capsys.readouterr()
+    assert "Buy milk" in captured.out
+
 
