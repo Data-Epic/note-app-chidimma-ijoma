@@ -29,5 +29,16 @@ Test adding a reminder note.
     assert notes_manager.notes[0].id == note_id
     assert notes_manager.notes[0].reminder_time == "2025-03-10 10:00 AM"
 
+def test_delete_note(setup_notes_manager):
+    """
+Test deleting a note.
+"""
+    notes_manager = setup_notes_manager
+    note_id = notes_manager.add_note("text", "To be deleted")
+    
+    assert notes_manager.delete_note(note_id) == True
+    assert len(notes_manager.notes) == 0
+
+
 
 
