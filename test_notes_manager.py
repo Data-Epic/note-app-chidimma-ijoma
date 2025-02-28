@@ -68,4 +68,16 @@ Test searching for a note.
     captured = capsys.readouterr()
     assert "Buy milk" in captured.out
 
+def test_search_no_match(setup_notes_manager, capsys):
+    """
+Test searching for a non-existent keyword.
+"""
+    notes_manager = setup_notes_manager
+    notes_manager.add_note("text", "Some random note")
+    notes_manager.search_notes("Python")
+
+    captured = capsys.readouterr()
+    assert "No notes found" in captured.out
+
+
 
