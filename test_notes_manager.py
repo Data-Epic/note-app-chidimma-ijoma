@@ -1,5 +1,5 @@
 import pytest
-from smart_notes import NotesManager  # Import your NotesManager class
+from Notes_Manager import NotesManager  # Import your NotesManager class
 
 @pytest.fixture
 def setup_notes_manager():
